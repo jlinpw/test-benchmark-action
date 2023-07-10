@@ -1,0 +1,38 @@
+# action.yml
+name: 'test-pw-workflow'
+description: 'Test a workflow on Parallel Works (PW) platform'
+inputs:
+  pw-user-host:  # id of input
+    description: 'Name of the PW user host'
+    required: true
+    default: 'beluga.parallel.works'
+  pw-api-key:
+    description: 'API key of the PW account. echo ${PW_API_KEY}'
+    required: true
+    default: 'use-github-secrets-to-store-your-key'
+  pw-user:
+    description: 'Name of the PW user. echo ${PW_USER}'
+    required: true
+    default: 'User.Demo'
+  resource-pool-names:
+    description: 'Name of the resource pools required to run the workflow. Use --- to define multiple resource pools, e.g. pool1---pool2. If no resource is required specify ---'
+    required: true
+    default: 'gcpslurmv2'
+  workflow-name:
+    description: 'Name of the PW workflow to test'
+    required: true
+    default: 'singlecluster_parsl_demo'
+  workflow-parameters:
+    description: 'Input parameters to the PW workflow. Download JSON payload from input form'
+    required: true
+    default: '{"name": "PW_USER"}'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.pw-user-host }}
+    - ${{ inputs.pw-api-key }}
+    - ${{ inputs.pw-user }}
+    - ${{ inputs.resource-pool-names }}
+    - ${{ inputs.workflow-name }}
+    - ${{ inputs.workflow-parameters }} 
