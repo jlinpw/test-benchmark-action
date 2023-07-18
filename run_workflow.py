@@ -81,9 +81,11 @@ if __name__ == "__main__":
 
         time.sleep(5)
 
-    # TODO: add code to detect startCmd
-    # TODO: add code to use new cluster id instead of manual input
-    
+    # add startCmd to wf_xml_args
+    startCmd = get_cmd(wf_name, c)
+    wf_xml_args["startCmd"] = startCmd
+    # TODO: use new cluster id instead of manual input
+    wf_xml_args["resource_1"]["id"] = cluster_id
 
     # Running workflow
     if run_workflow:
