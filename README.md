@@ -13,7 +13,7 @@ To add this action to a PW workflow (stored in a separate repository since this 
 are at least two steps that are done in the **workflow repository**:
 
 1. The PW client requires the API key of the account for authentication. Store this key as a [Github secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) in the repository with your PW workflow (**not** this repository).  Navigate to your workflow on GitHub.com and then click on `Settings` > `Secrets` > `Actions` > `New Repository Secret`. This will only be possible if you are the owner of the workflow repository or have been granted permissions to edit/view repository secrets in the workflow repository, otherwise the buttons will be hidden.
-3. Tell GitHub that this action needs to be triggered whenever something (that you specify) happens in the **workflow repository** by adding this action to `.github/workflows/main.yaml` in the workflow repository.  For example, the code snippet below adds this action the Github repository of a PW workflow such that the worflow is tested with every new push:
+2. Tell GitHub that this action needs to be triggered whenever something (that you specify) happens in the **workflow repository** by adding this action to `.github/workflows/main.yaml` in the workflow repository.  For example, the code snippet below adds this action the Github repository of a PW workflow such that the worflow is tested with every new push:
 
 ```
 on: [push]
@@ -21,24 +21,25 @@ on: [push]
 jobs:
   test-pw-workflow:
     runs-on: ubuntu-latest
-    name: test-pw-workflow-beluga
+    name: test-pw-workflow-cloud
     steps:
-      - name: run-workflow-beluga
-        id: run-beluga
+      - name: run-workflow-cloud
+        id: run-cloud
         uses: parallelworks/test-workflow-action@v5
         with:
-          pw-user-host: 'beluga.parallel.works'
-          pw-api-key: ${{ secrets.ALVAROVIDALTO_BELUGA_API_KEY }}
-          pw-user: 'alvarovidalto'
-          resource-pool-names: 'gcpslurmv2'
-          workflow-name: 'singlecluster_parsl_demo'
-          workflow-parameters: '{"name": "PW_USER"}'
+          pw-user-host: 'cloud.parallel.works'
+          pw-api-key: ${{ secrets.PW_API_KEY }}
+          pw-user: 'jlin'
+          resource-pool-name: 'gcpslurmv2'
+          resource-pool-tpe: 'gclusterv2'
+          workflow-name: 'test'
+          workflow-parameters: '{"command": "hostname", "resource_1": {"type": "computeResource", "id": "6489decae2199bee7eaf7a7f"}, "startCmd": "001_single_resource_command/main.sh"}'
 ```
 
-The last five lines of this example of `.github/workflows/main.yaml` are the 5 essential inputs to running any 
+The last five lines of this example of `.github/workflows/main.yaml` are the 6 essential inputs to running any 
 PW workflow via the PW API. These inputs will vary depending on the host (e.g. `cloud.parallel.works`), the user's
-credentials (API key and username), the resource to run the workflow on, and the workflow itself (`workflow-name`
-and `workflow-parameters`); as such all 5 of these lines need to be specific to a particular workflow and are 
+credentials (API key and username), the resource name and type to be created, and the workflow itself (`workflow-name`
+and `workflow-parameters`); as such all 6 of these lines need to be specific to a particular workflow and are 
 defined in the **workflow repository** and not in the "action repository" (here).
 
 ### Notes:
@@ -67,4 +68,6 @@ jobs:
   ...
 ```
 
-4. 
+4. Setting the cluster ID will be dependent on the workflow parameter JSON. This can (and probably will) be changed in `run_workflow.py` for future benchmark tests (although there could be a better way to do this, like setting the cluster ID as a fixed variable in the workflow JSON file for each workflow, much like `startCmd`). `resource.json` can also be changed to reflect the cluster configuration needed for specific benchmark tests, but this creates a basic Google cluster. 
+
+Further error checking is needed within the code. 

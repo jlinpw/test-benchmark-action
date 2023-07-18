@@ -4,11 +4,17 @@ import traceback
 import time
 import requests
 
-# TODO: Add configuring cluster and deleting cluster
-# FIXME: Wont be able to stop the resource if it was just started!
 from time import sleep
 
 from client_functions import *
+
+# TODO: implement error checking & errors along the way:
+# check if cluster name is already taken/created
+# if anything fails along the way, delete the already created cluster, but only if it was created through the code)
+# DO NOT delete the cluster if it was already created!!!
+# add more specific error messages using API
+
+# TODO: make clode cleaner (a lot cleaner)
 
 if __name__ == "__main__":
     pw_user_host = sys.argv[1]  # beluga.parallel.works
