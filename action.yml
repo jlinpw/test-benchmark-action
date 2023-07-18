@@ -14,14 +14,18 @@ inputs:
     description: 'Name of the PW user. echo ${PW_USER}'
     required: true
     default: 'User.Demo'
-  resource-pool-names:
-    description: 'Name of the resource pools required to run the workflow. Use --- to define multiple resource pools, e.g. pool1---pool2. If no resource is required specify ---'
+  resource-pool-name:
+    description: 'Name of the resource pools required to run the workflow.'
     required: true
     default: 'gcpslurmv2'
+  resource-pool-type:
+    description: 'Type of resource pool to be created.'
+    required: true
+    default: 'gclusterv2'
   workflow-name:
     description: 'Name of the PW workflow to test'
     required: true
-    default: 'singlecluster_parsl_demo'
+    default: 'test'
   workflow-parameters:
     description: 'Input parameters to the PW workflow. Download JSON payload from input form'
     required: true
