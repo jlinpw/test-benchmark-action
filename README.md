@@ -1,11 +1,12 @@
 # Test Workflow Action
 Sample [Docker-based Github action](https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action) to automatically test a PW workflow using the [PW client](https://raw.githubusercontent.com/parallelworks/pw-cluster-automation/master/client.py). The action defines the following steps:
 
-1. Starts the PW resources required by the workflow
-2. Submits the workflow
-3. Stops the PW resources started in (1)
-
-**Note:** If the resources requested by the workflow are already running, the workflow will use them and **not** shut them down. 
+1. Creates a cluster on the PW platform 
+2. Configures the cluster 
+3. Starts the PW resources required by the workflow
+4. Submits the workflow
+5. Stops the PW resources started in (3)
+6. Deletes the cluster created
 
 The inputs to the action are defined in the `action.yml` file here and are general so they apply to almost any PW workflow. 
 To add this action to a PW workflow (stored in a separate repository since this repository stores only the action), there 
@@ -65,3 +66,5 @@ on:
 jobs:
   ...
 ```
+
+4. 
