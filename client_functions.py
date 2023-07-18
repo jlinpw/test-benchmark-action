@@ -9,6 +9,13 @@ def printd(*args):
     print(datetime.now(), *args)
 
 
+def create_resource(resource_name, type, c):
+    printd("Creating resource {}".format(resource_name))
+    d = c.create_v2_cluster(resource_name, "test3", "test", type)
+    printd("{} created".format(resource_name))
+    return d
+
+
 def start_resource(resource_name, c):
     printd("Starting resource {}".format(resource_name))
     my_clusters = c.get_resources()

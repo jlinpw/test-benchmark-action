@@ -1,0 +1,43 @@
+{
+    "type": "gclusterv2",
+    "resourceName": "test3",
+    "description": "",
+    "tags": "",
+    "username": "jlin",
+    "resourceData": {
+        "availability_zone": "us-central-1a",
+        "controller_image": "latest",
+        "controller_net_type": false,
+        "export_fs_type": "xfs",
+        "image_disk_count": 0,
+        "image_disk_name": "projects/modular-magpie-167320/global/images/apps-08-image",
+        "image_disk_size_gb": 1,
+        "management_shape": "c2-standard-4",
+        "partition_config": [
+            {
+                "availability_zone": "us-central-1a",
+                "default": "YES",
+                "elastic_image": "latest",
+                "enable_spot": false,
+                "instance_type": "c2-standard-4",
+                "max_node_num": 4,
+                "name": "compute",
+                "net_type": true,
+                "gvnic": false, 
+                "migrate_on_maintenance": true,
+                "tier_1": false
+            }
+        ],
+        "region": "us-central1"
+    },
+    "useLustre": false,
+    "universalData": {
+        "jump_node": false,
+        "multi_factor": false,
+        "multi_user": false,
+        "resource_account": "Pworks GCP",
+        "access_public_key": "",
+        "user_bootstrap": "",
+        "project": "pw-google-contrib"
+    }
+}
