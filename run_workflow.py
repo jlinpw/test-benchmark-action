@@ -50,7 +50,7 @@ if __name__ == "__main__":
     cluster_id = cluster["id"]
     if cluster:
         try:
-            with open("/app/resource.json") as cluster_definition:
+            with open("resource.json") as cluster_definition:
                 data = json.load(cluster_definition)
                 printd("Updating resource {}".format(resource_name))
                 data["resourceName"] = resource_name
