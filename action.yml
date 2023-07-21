@@ -37,6 +37,7 @@ runs:
     - ${{ inputs.pw-user-host }}
     - ${{ inputs.pw-api-key }}
     - ${{ inputs.pw-user }}
-    - ${{ inputs.resource-pool-names }}
+    - ${{ inputs.resource-pool-name }}
+    - ${{ inputs.resource-pool-type }}
     - ${{ inputs.workflow-name }}
     - ${{ inputs.workflow-parameters }} 

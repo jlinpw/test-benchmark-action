@@ -40,7 +40,9 @@ The last five lines of this example of `.github/workflows/main.yaml` are the 6 e
 PW workflow via the PW API. These inputs will vary depending on the host (e.g. `cloud.parallel.works`), the user's
 credentials (API key and username), the resource name and type to be created, and the workflow itself (`workflow-name`
 and `workflow-parameters`); as such all 6 of these lines need to be specific to a particular workflow and are 
-defined in the **workflow repository** and not in the "action repository" (here).
+defined in the **workflow repository** and not in the "action repository" (here). 
+
+Also note that the resource ID will be replaced by the created resource ID, and `startCmd` will be replaced by the one specified in `workflow.xml`.
 
 ### Notes:
 1. The `workflow-parameters` for your workflow can be downloaded from the input form in PW as shown in the screenshot below.
@@ -68,6 +70,4 @@ jobs:
   ...
 ```
 
-4. Setting the cluster ID will be dependent on the workflow parameter JSON. This can (and probably will) be changed in `run_workflow.py` for future benchmark tests (although there could be a better way to do this, like setting the cluster ID as a fixed variable in the workflow JSON file for each workflow, much like `startCmd`). `resource.json` can also be changed to reflect the cluster configuration needed for specific benchmark tests, but this creates a basic Google cluster. 
-
-Further error checking is needed within the code. 
+4. Setting the cluster ID will be dependent on the workflow parameter JSON. This can (and probably will) be changed in `run_workflow.py` for future benchmark tests (although there could be a better way to do this, like setting the cluster ID as a fixed variable in the workflow JSON file for each workflow, much like `startCmd`). `resource.json` can also be changed to reflect the cluster configuration needed for specific benchmark tests, but this creates a basic and cheap Google cluster. 
