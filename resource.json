@@ -32,9 +32,6 @@
     },
     "useLustre": false,
     "universalData": {
-        "jump_node": false,
-        "multi_factor": false,
-        "multi_user": false,
         "resource_account": "Pworks GCP",
         "access_public_key": "",
         "user_bootstrap": "",

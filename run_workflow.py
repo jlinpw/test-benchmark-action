@@ -8,15 +8,10 @@ from time import sleep
 
 from client_functions import *
 
-# TODO: implement error checking & errors along the way:
-# check if cluster name is already taken/created
-# if anything fails along the way, delete the already created cluster, but only if it was created through the code)
-# DO NOT delete the cluster if it was already created!!!
-# add more specific error messages using API
-
-# TODO: make clode cleaner (a lot cleaner)
+# TODO: make code cleaner (a lot cleaner)
 
 if __name__ == "__main__":
+    # input arguments
     pw_user_host = sys.argv[1]  # beluga.parallel.works
     pw_api_key = sys.argv[2]  # echo ${PW_API_KEY}
     user = sys.argv[3]  # echo ${PW_USER}
@@ -25,20 +20,8 @@ if __name__ == "__main__":
     wf_name = sys.argv[6]
     wf_xml_args = json.loads(sys.argv[7])
 
+    # initialize the client
     c = Client("https://" + pw_user_host, pw_api_key)
-
-    # create the cluster
-    cluster = create_resource(resource_name, resource_type, c)
-    cluster_id = cluster["_id"]
-
-    # configure the cluster
-    with open("resource.json") as cluster_definition:
-        data = json.load(cluster_definition)
-        try:
-            printd("Updating cluster {}".format(resource_name))
-            updated_cluster = c.update_v2_cluster(cluster_id, data)
-        except requests.exceptions.HTTPError as e:
-            print(e.response.text)
 
     # Make sure we get to stopping the resources!
     run_workflow = True
@@ -46,7 +29,45 @@ if __name__ == "__main__":
     # Exit with error code:
     exit_error = ""
 
-    # Starting resources
+    # Cluster status (can be created or already-made)
+    cluster_status = []
+
+    # Creating resources
+    try:
+        cluster_status.append(create_resource(resource_name, resource_type, c))
+    except requests.exceptions.HTTPError as e:
+        msg = e.response.text
+        printd(msg)
+        traceback.print_exc()
+        run_workflow = False
+        exit_error += msg
+
+    # Configure the cluster using resource.json, but only if it was just created
+    my_clusters = c.get_resources()
+    cluster = next(
+        (item for item in my_clusters if item["name"] == resource_name), None
+    )
+    cluster_id = cluster["id"]
+    if cluster:
+        try:
+            with open("resource.json") as cluster_definition:
+                data = json.load(cluster_definition)
+                printd("Updating resource {}".format(resource_name))
+                data["resourceName"] = resource_name
+                c.update_v2_cluster(cluster_id, data)
+                printd("{} updated".format(resource_name))
+        except requests.exceptions.HTTPError as e:
+            msg = e.response.text
+            printd(msg)
+            traceback.print_exc()
+            if cluster_status[0] == "created":
+                c.delete_resource(cluster_id)
+            exit_error += msg
+            raise Exception(exit_error)
+    else:
+        printd("{} not found".format(resource_name))
+
+    # Starting resource
     resource_status = []
     try:
         resource_status.append(start_resource(resource_name, c))
@@ -63,17 +84,25 @@ if __name__ == "__main__":
 
     printd("\nWaiting for", resource_name, "to start...")
     while True:
+
         current_state = c.get_resources()
+
         for cluster in current_state:
-            if cluster["name"] in resource_name and cluster["status"] == "on":
+
+            if cluster["name"] == resource_name and cluster["status"] == "on":
+                
                 if cluster["name"] not in started:
+                    
                     state = cluster["state"]
+                    
                     if cluster["name"] not in last_state:
                         printd(cluster["name"], state)
                         last_state[cluster["name"]] = state
+                    
                     elif last_state[cluster["name"]] != state:
                         print(cluster["name"], state)
                         last_state[cluster["name"]] = state
+                    
                     if "masterNode" in cluster["state"]:
                         if cluster["state"]["masterNode"] != None:
                             ip = cluster["state"]["masterNode"]
@@ -81,6 +110,7 @@ if __name__ == "__main__":
                             print(entry)
                             cluster_hosts.append(entry)
                             started.append(cluster["name"])
+        
         if len(started) == 1:
             print("\nCluster started")
             break
@@ -90,7 +120,6 @@ if __name__ == "__main__":
     # add startCmd to wf_xml_args
     startCmd = get_cmd(wf_name, c)
     wf_xml_args["startCmd"] = startCmd
-    # TODO: use new cluster id instead of manual input
     wf_xml_args["resource_1"]["id"] = cluster_id
 
     # Running workflow
@@ -127,8 +156,21 @@ if __name__ == "__main__":
     # stop the pool
     stop_resource(resource_name, c)
 
-    # delete the resource
-    c.delete_resource(cluster_id)
+    # Deleting the resource
+    if cluster_status[0] == "created":
+        try:
+            printd("Deleting resource {}".format(resource_name))
+            c.delete_resource(cluster_id)
+            printd("Deleted {} successfully".format(resource_name))
+        except requests.exceptions.HTTPError as e:
+            msg = e.response.text
+            printd(msg)
+            traceback.print_exc()
+            run_workflow = False
+            exit_error += msg
 
+    # If there's any error, delete the resource if it was just created
     if exit_error:
+        if cluster_status[0] == "created":
+            c.delete_resource(cluster_id)
         raise (Exception(exit_error))

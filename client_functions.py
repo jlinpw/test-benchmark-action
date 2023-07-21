@@ -4,6 +4,7 @@ from time import sleep
 from datetime import datetime
 import time
 import xml.etree.ElementTree as ET
+import requests
 
 
 def printd(*args):
@@ -12,9 +13,18 @@ def printd(*args):
 
 def create_resource(resource_name, type, c):
     printd("Creating resource {}".format(resource_name))
-    d = c.create_v2_cluster(resource_name, "test3", "test", type)
-    printd("{} created".format(resource_name))
-    return d
+    my_clusters = c.get_resources()
+    # check if resource exists already
+    cluster = next(
+        (item for item in my_clusters if item["name"] == resource_name), None
+    )
+    if not cluster:
+        c.create_v2_cluster(resource_name, "test3", "test", type)
+        printd("{} created".format(resource_name))
+        return "created"
+    else:
+        printd("{} already created".format(resource_name))
+        return "already-made"
 
 
 def start_resource(resource_name, c):
@@ -62,7 +72,6 @@ def launch_workflow(wf_name, wf_xml_args, user, c):
     printd("Launching workflow {wf} in user {user}".format(wf=wf_name, user=user))
     printd("XML ARGS: ", json.dumps(wf_xml_args, indent=4))
     response = c.run_workflow(wf_name, wf_xml_args)
-    # jid, djid = c.start_job(wf_name, wf_xml_args, user)
     return response
 
 
