@@ -154,7 +154,8 @@ if __name__ == "__main__":
     sleep(5)
     printd(resource_name, "status", resource_status[0])
     # stop the pool
-    stop_resource(resource_name, c)
+    if resource_status[0] == "started":
+        stop_resource(resource_name, c)
 
     # Deleting the resource
     if cluster_status[0] == "created":
